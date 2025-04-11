@@ -11,3 +11,12 @@ export const saltAndHashPassword = async (password: string) => {
     throw new Error("Error hashing password");
   }
 };
+
+export const verifyPassword = async (password: string, hashedPassword: string) => {
+  try {
+    const isMatch = await bcrypt.compareSync(password, hashedPassword);
+    return isMatch;
+  } catch (error: unknown) {
+    throw new Error("Error verifying password");
+  }
+};

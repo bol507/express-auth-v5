@@ -1,45 +1,22 @@
-import { ExpressAuth } from "@auth/express"
-import Credentials from "@auth/express/providers/credentials"
-import express from "express"
-import { saltAndHashPassword } from "@/utils/password"
-import GitHub from "@auth/express/providers/github"
-import Google from "@auth/express/providers/google"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { prisma } from "@/utils/prisma"
- 
-const app = express()
-app.use(
-  "/auth/*",
-  ExpressAuth({
-    providers: [
-      Credentials({
-        
-        credentials: {
-          email: {},
-          password: {},
-        },
-        authorize: async (credentials) => {
-          let user = null
- 
-          // logic to salt and hash password
-          const pwHash = saltAndHashPassword(credentials.password)
- 
-          // logic to verify if the user exists
-          user = await getUserFromDb(credentials.email, pwHash)
- 
-          if (!user) {
-            // No user found, so this is their first attempt to login
-            // Optionally, this is also the place you could do a user registration
-            throw new Error("Invalid credentials.")
-          }
- 
-          // return user object with the their profile data
-          return user
-        },
-      }),
-      GitHub,
-      Google
-    ],
-    adapter: PrismaAdapter(prisma),
-  })
-)
+import Router from "express";
+import { UserModel } from "@src/interfaces/user";
+import AuthController from "@src/controllers/auth.controller";
+
+interface AuthRouterProps {
+  userModel: UserModel;
+}
+
+export const AuthRouter = ({ userModel }: AuthRouterProps) => {
+  const authRouter = Router();
+  const authController = new AuthController({ userModel });
+
+  authRouter.post("/signin", authController.signIn);
+  authRouter.post("/signup", authController.signUp);
+  //TODO: Add routes here
+  //authRouter.get("/callback/github/", authController.callbackGithub);
+  //authRouter.get("/callback/google", authController.callbackGoogle);
+
+  return authRouter;
+};
+
+export default AuthRouter;
