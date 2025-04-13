@@ -32,8 +32,9 @@ export default class AuthController {
       }
 
       const token = jwtToken.generate({ id: userDb.id, email });
+      res.setHeader('Access-Control-Expose-Headers', 'Authorization');
       res.setHeader("Authorization", `Bearer ${token}`);
-      res.status(200).json({ message: "Authentication successful" });
+      res.status(200).json({ user:userDb, message: "Login successful" });
 
     } catch (error) {
       next(error);
@@ -60,6 +61,7 @@ export default class AuthController {
       });
 
       const token = jwtToken.generate({ id: newUser.id, email });
+      res.setHeader('Access-Control-Expose-Headers', 'Authorization');
       res.setHeader("Authorization", `Bearer ${token}`);
       res.status(201).json({ message: "Registration successful" });
     } catch (error) {

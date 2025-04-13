@@ -8,6 +8,13 @@ export default class UserModel {
     await prisma.user.findUnique({
       where: {
         id,
+      }, 
+      include: {  
+        accounts: {
+          include: {
+            user: true,
+          }
+        }
       },
     })
   );
@@ -17,6 +24,13 @@ export default class UserModel {
       where: {
         email,
       },
+      include: {  
+        accounts: {
+          include: {
+            user: true,
+          }
+        }
+      },
     })  
   );
 
@@ -25,4 +39,5 @@ export default class UserModel {
       data: user,
     })
   );
+
 }

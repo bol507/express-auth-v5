@@ -10,7 +10,7 @@ const app: Express = express();
 
 const API_VERSION = "/api/v1";
 
-app.use(cors({ credentials: true, origin: true }));
+app.use(cors({ credentials: true, origin: true,exposedHeaders: ['Authorization']  }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
