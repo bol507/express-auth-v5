@@ -2,12 +2,11 @@ import express, { Request, Response, Express, NextFunction, ErrorRequestHandler 
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser"
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "./presentation/routes";
 import { errorHandler } from "./utils/error.handler";
 
 dotenv.config();
 const app: Express = express();
-
 const API_VERSION = "/api/v1";
 
 app.use(cors({ credentials: true, origin: true,exposedHeaders: ['Authorization']  }));
