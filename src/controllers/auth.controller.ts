@@ -1,4 +1,4 @@
-import { UserModel } from "@src/interfaces/user";
+import { UserModel } from "@src/interfaces/user.interface";
 import { NextFunction, Request, Response } from "express";
 import boom from "@hapi/boom";
 import { saltAndHashPassword, verifyPassword } from "@src/utils/password";

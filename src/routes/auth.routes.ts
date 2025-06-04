@@ -1,5 +1,5 @@
 import Router from "express";
-import { UserModel } from "@src/interfaces/user";
+import { UserModel } from "@src/interfaces/user.interface";
 import AuthController from "@src/controllers/auth.controller";
 
 interface AuthRouterProps {

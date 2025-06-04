@@ -24,6 +24,15 @@ export default class VerificationTokenModel {
     
   };
 
+  static getByToken = async (token: string) => {
+      const verificationToken = await prisma.verificationToken.findUnique({
+        where: {
+          token,
+        },
+      });
+      return verificationToken;
+  };
+
   static deleteByEmail = async (email: string) => {
    
       const verificationToken = await prisma.verificationToken.deleteMany({
