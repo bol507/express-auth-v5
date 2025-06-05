@@ -1,8 +1,8 @@
 import Joi, { optional } from "joi";
-import bcrypt from "bcryptjs";
+import { saltAndHashPassword, verifyPassword } from "@src/config/adapters/hash.adapter";
 
 class UserEntity {
-  id: string;
+  id?: string | null;
   email?: string | null; 
   name?: string | null;  
   emailVerified?: Date | null; 
@@ -11,13 +11,13 @@ class UserEntity {
 
   private static schema = Joi.object({
     id: Joi.string().optional(),
-    email: Joi.string().email().required(),
-    name: Joi.string().min(2).max(30),optional,
+    email: Joi.string().email().optional(),
+    name: Joi.string().min(2).max(30).optional,
     password: Joi.string().min(6).required(),
   });
 
   constructor(
-    id: string,
+    id?: string | null,
     email?: string | null,
     name?: string | null,
     emailVerified?: Date | null,
@@ -36,15 +36,23 @@ class UserEntity {
     return UserEntity.schema.validate(this);
   }
 
-  async hashPassword(): Promise<void> {
-    if (this.password) {
-      this.password = await bcrypt.hash(this.password, 10);
-    }
+  async hashPassword(): Promise<UserEntity> {
+    if (!this.password) return this;
+    const hashedPassword = await saltAndHashPassword(this.password);
+    
+    return new UserEntity(
+      this.id,
+      this.email,
+      this.name,
+      this.emailVerified,
+      this.image,
+      hashedPassword
+    );
   }
 
   async comparePassword(password: string): Promise<boolean> {
     if (!this.password) return false;
-    return await bcrypt.compare(password, this.password);
+    return await verifyPassword(password, this.password);
   }
   
 }

@@ -1,6 +1,6 @@
 import UserEntity from "@src/domain/entities/user.entitiy";
 import { UserRepository } from "@src/domain/repositories/user.repository";
-import { prisma } from "@src/utils/prisma";
+import { prisma } from "@src/config/adapters/prisma.adapter";
 import { UserMapper } from "../mappers/user.mapper";
 
 class UserRepositoryImpl implements UserRepository {
@@ -36,7 +36,9 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   async create(user: UserEntity): Promise<UserEntity> {
-    const userCreated = await prisma.user.create({ data: user });
+    const userCreated = await prisma.user.create({ 
+      data: UserMapper.toPrisma(user)
+    });
     return UserMapper.toEntity(userCreated);
   }
 }

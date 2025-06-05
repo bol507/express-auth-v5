@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser"
 import { registerRoutes } from "./presentation/routes";
-import { errorHandler } from "./utils/error.handler";
+import { errorHandler } from "./infrastructure/middleware/error.middleware";
 
 dotenv.config();
 const app: Express = express();

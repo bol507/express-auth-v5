@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import boom from "@hapi/boom";
-import logger from "./logger";
+import logger from "../../config/logger";
 
 const HTTP_STATUS = {
   BAD_REQUEST: 400,
@@ -16,8 +16,9 @@ export const errorHandler = (
   next: NextFunction
 ) => {
   logger.error("Middleware: ErrorHandler : ", err.message, err.name);
+
   if (boom.isBoom(err)) {
-    const { output } = err as boom.Boom;
+    const { output } = err
     return res.status(output.statusCode).json(output.payload);
   }
 
@@ -41,14 +42,20 @@ const handleSpecificError = (error: Error, response: Response) => {
           error.name === "TokenExpiredError" ? "token expired" : error.message
       });
     case "BadRequest":
-    case "Unauthorized":
-    case "NotFound":
       return response
         .status(HTTP_STATUS.BAD_REQUEST)
         .json({ error: error.message });
+    case "Unauthorized":
+      return response
+        .status(HTTP_STATUS.UNAUTHORIZED)
+        .json({ error: error.message });
+    case "NotFound":
+      return response
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ error: error.message });
     default:
-      return response.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-        error: "Internal Server Error"
-      });
+      return response
+        .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+        .json({error: "Internal Server Error"});
   }
 };
