@@ -3,17 +3,14 @@ import { User as PrismaUser } from "@prisma/client";
 
 export class UserMapper {
   static toEntity(prismaUser: PrismaUser): UserEntity {
-
-    
-
-    return new UserEntity(
-      prismaUser.id,
-      prismaUser.email ?? undefined, 
-      prismaUser.name ?? undefined,
-      prismaUser.emailVerified ?? undefined,
-      prismaUser.image ?? undefined,
-      prismaUser.password ?? undefined
-    );
+    return new UserEntity({
+      id: prismaUser.id,
+      email: prismaUser.email ?? undefined, 
+      name: prismaUser.name ?? undefined,
+      emailVerified: prismaUser.emailVerified ?? undefined,
+      image: prismaUser.image ?? undefined,
+      password: prismaUser.password ?? undefined,
+    });
   }
 
   static toPrisma(userEntity: UserEntity): Omit<PrismaUser, 'id'> {
