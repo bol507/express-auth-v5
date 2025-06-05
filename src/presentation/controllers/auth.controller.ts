@@ -4,28 +4,38 @@ import SignUp from "@src/application/use-cases/sign-up";
 import UserRepositoryImpl from "@src/infrastructure/repositories/user.repository.impl";
 import SignInDto from "@src/domain/dtos/sign-in.dto";
 import SignUpDto from "@src/domain/dtos/sign-up.dto";
-
-
-const userRepository = new UserRepositoryImpl();
-const signUp = new SignUp(userRepository);
-const signIn = new SignIn(userRepository);
-
+import boom from "@hapi/boom";
 class AuthController {
 
-  static async signIn(req: Request, res: Response, next: NextFunction) {
+  constructor(
+    private userRepository: UserRepositoryImpl = new UserRepositoryImpl(),
+    private signUpUseCase: SignUp = new SignUp(userRepository),
+    private signInUseCase: SignIn = new SignIn(userRepository)
+  ) {}
+
+  async signIn(req: Request, res: Response, next: NextFunction) { 
     try {
-      const signInDto = new SignInDto(req.body.email, req.body.password);
-      const user = await signIn.execute(signInDto);
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return next(boom.badRequest("Email and password are required"));
+      }
+
+      const signInDto = new SignInDto(email, password);
+      const user = await this.signInUseCase.execute(signInDto);
       res.status(200).json(user);
     } catch (error) {
       next(error)
     }
   }
 
-  static async signUp(req: Request, res: Response, next: NextFunction) {
+  async signUp(req: Request, res: Response, next: NextFunction) {
     try {
-      const signUpDto = new SignUpDto(req.body.name, req.body.email, req.body.password);
-      const user = await signUp.execute(signUpDto);
+      const { name, email, password } = req.body;
+      if (!name || !email || !password) {
+        return next(boom.badRequest("Name, email, and password are required"));
+      }
+      const signUpDto = new SignUpDto(name, email, password);
+      const user = await this.signUpUseCase.execute(signUpDto);
       res.status(201).json(user);
     } catch (error) {
       next(error)
