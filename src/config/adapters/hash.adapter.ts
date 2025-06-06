@@ -9,8 +9,8 @@ const SALT_ROUNDS = 10;
  */
 export const saltAndHashPassword = async (password: string): Promise<string> => {
   try {
-    const salt = await bcrypt.genSaltSync(SALT_ROUNDS);
-    return await bcrypt.hashSync(password, salt);
+    const salt = await bcrypt.genSalt(SALT_ROUNDS);
+    return await bcrypt.hash(password, salt);
   } catch (error) {
     throw new Error("Error hashing password");
   }
@@ -22,9 +22,9 @@ export const saltAndHashPassword = async (password: string): Promise<string> => 
  * @param hashedPassword - The hashed password to compare against.
  * @returns True if the passwords match, false otherwise.
  */
-export const verifyPassword = (password: string, hashedPassword: string): boolean => {
+export const verifyPassword = async (password: string, hashedPassword: string): Promise<boolean> => {
   try {
-    return bcrypt.compareSync(password, hashedPassword);
+    return bcrypt.compare(password, hashedPassword);
   } catch (error) {
     throw new Error("Error verifying password");
   }

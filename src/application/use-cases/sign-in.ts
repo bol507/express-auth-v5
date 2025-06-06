@@ -3,6 +3,7 @@ import SignInDto from "@src/domain/dtos/sign-in.dto";
 import UserEntity from "@src/domain/entities/user.entitiy";
 import { UserRepository } from "@src/domain/repositories/user.repository";
 import boom from "@hapi/boom";
+import { verifyPassword } from "@src/config/adapters/hash.adapter";
 class SignIn {
   constructor( private userRepository: UserRepository) {}
 
@@ -14,7 +15,7 @@ class SignIn {
     if (!existingUser) {      
       throw boom.unauthorized("User not found");
     }
-    const isPasswordValid = await existingUser.comparePassword(userDto.password);
+    const isPasswordValid = await verifyPassword(userDto.password, existingUser.password!);
     if (!isPasswordValid) {
       throw boom.unauthorized("password is incorrect");
     }
