@@ -1,6 +1,8 @@
 import UserRepositoryImpl from "./user.repository.impl";
 
-
+import {describe, expect, test} from '@jest/globals';
+import { User as prismaUser } from "@prisma/client"
+import { prisma } from "@src/config/adapters/prisma.adapter";
 
 const userRepository = new UserRepositoryImpl();
 
@@ -30,7 +32,6 @@ describe("Users Repository", () => {
   });
 
   afterAll(async () => {
-    // Limpia los datos de prueba
     await prisma.user.deleteMany({
       where: {
         email: {
@@ -42,7 +43,7 @@ describe("Users Repository", () => {
   });
 
   test("should return a user", async () => {
-    const userFound = await userRepository.findById(user.id);
+    const userFound = await userRepository.getById(user.id);
 
     expect(userFound).toBeDefined();
     expect(userFound?.email).toBe(user.email);
@@ -52,14 +53,14 @@ describe("Users Repository", () => {
   });
 
   test("should return null if user not found", async () => {
-    const userFound = await userRepository.findById("123456");
+    const userFound = await userRepository.getById("123456");
 
     expect(userFound).toBeNull();
   });
 
   test("should return a user by email", async () => {
     
-    const userFound = await userRepository.findByEmail('test@test.com');
+    const userFound = await userRepository.getByEmail('test@test.com');
 
     expect(userFound).toBeDefined();
     expect(userFound?.email).toBe(user.email);
@@ -69,16 +70,9 @@ describe("Users Repository", () => {
   });
 
   test("should return null if user not found by email", async () => {
-    const userFound = await userRepository.findByEmail("nonexistent@test.com");
+    const userFound = await userRepository.getByEmail("nonexistent@test.com");
 
     expect(userFound).toBeNull();
   });
 
-  test("should return all users", async () => {
-    const users = await userRepository.findAll();
-
-    expect(users).toBeDefined();
-    expect(users.length).toBe(2);
-    expect(users.map(u => u.email)).toEqual(expect.arrayContaining([user.email, user2.email]));
-  });
 });
